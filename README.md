@@ -7,5 +7,5 @@
 ```sh
 cd refactoring
 npm i
-npm run dev
+npm run dev ch1/main.js
 ```
