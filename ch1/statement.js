@@ -1,4 +1,5 @@
 import createStatementData from './createStatementData.js';
+
 const usd = (aNumber) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -35,10 +36,12 @@ const renderHtml = (data) => {
   return result;
 };
 
+// statement
 export const statement = (invoice, plays) => {
   return renderPlainText(createStatementData(invoice, plays));
 };
 
+// HtmlStatement
 export const HtmlStatement = (invoice, plays) => {
   return renderHtml(createStatementData(invoice, plays));
 };

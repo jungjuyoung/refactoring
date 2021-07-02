@@ -1,34 +1,18 @@
+import createPerformanceCalculator from './performanceCalculator.js';
+
 const createStatementData = (invoice, plays) => {
   const playFor = (aPerformance) => plays[aPerformance.playID];
-  const amountFor = (aPerformance) => {
-    let result = 0;
-    switch (aPerformance.playFor.type) {
-      case 'tragedy': {
-        result = 40000;
-        if (aPerformance.audience > 30)
-          result += 1000 * (aPerformance.audience - 30);
-        break;
-      }
-      case 'comedy': {
-        result = 30000;
-        if (aPerformance.audience > 20)
-          result += 10000 + 500 * (aPerformance.audience - 20);
-        result += 300 * aPerformance.audience;
-        break;
-      }
-      default:
-        throw new Error(`알 수 없는 장르: ${data.playFor.type}`);
-    }
+  const enrichedPerformances = invoice.performances.map((aPerformance) => {
+    const calculator = createPerformanceCalculator(
+      aPerformance,
+      playFor(aPerformance)
+    );
+    const result = { ...aPerformance };
+    result.playFor = calculator.play;
+    result.amountFor = calculator.amountFor;
+    result.volumeCreditsFor = calculator.volumeCreditsFor;
     return result;
-  };
-
-  const volumeCreditsFor = (aPerformance) => {
-    let result = 0; // 적립포인트
-    result += Math.max(aPerformance.audience - 30, 0);
-    if (aPerformance.playFor.type === 'comedy')
-      result += Math.floor(aPerformance.audience / 5);
-    return result;
-  };
+  });
 
   const totalAmount = (performances) =>
     performances.reduce(
@@ -41,14 +25,6 @@ const createStatementData = (invoice, plays) => {
       (total, aPerformance) => total + aPerformance.volumeCreditsFor,
       0
     );
-
-  const enrichedPerformances = invoice.performances.map((aPerformance) => {
-    const result = { ...aPerformance };
-    result.playFor = playFor(result);
-    result.amountFor = amountFor(result);
-    result.volumeCreditsFor = volumeCreditsFor(result);
-    return result;
-  });
 
   return {
     customer: invoice.customer,
