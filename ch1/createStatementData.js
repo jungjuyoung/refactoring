@@ -1,13 +1,5 @@
 const createStatementData = (invoice, plays) => {
   const playFor = (aPerformance) => plays[aPerformance.playID];
-  const enrichPerformance = (aPerformance) => {
-    const result = { ...aPerformance };
-    result.playFor = playFor(result);
-    result.amountFor = amountFor(result);
-    result.volumeCreditsFor = volumeCreditsFor(result);
-    return result;
-  };
-
   const amountFor = (aPerformance) => {
     let result = 0;
     switch (aPerformance.playFor.type) {
@@ -50,7 +42,13 @@ const createStatementData = (invoice, plays) => {
       0
     );
 
-  const enrichedPerformances = invoice.performances.map(enrichPerformance);
+  const enrichedPerformances = invoice.performances.map((aPerformance) => {
+    const result = { ...aPerformance };
+    result.playFor = playFor(result);
+    result.amountFor = amountFor(result);
+    result.volumeCreditsFor = volumeCreditsFor(result);
+    return result;
+  });
 
   return {
     customer: invoice.customer,
